@@ -1,0 +1,13 @@
+---
+- name: Install and setup Apache
+  hosts: all
+  become: true
+
+  tasks:
+   - name: Install Apache
+     yum: name=httpd state=latest
+
+
+   - name: Start and enable Apace
+     service: name=httpd state=started enabled=yes
+
