@@ -1,0 +1,81 @@
+---
+- name: Install LAMP
+  hosts: all
+  become: true
+  tasks:
+
+  - block: ###Centos###
+     - name: Install LAMP
+       yum:
+         name: 
+         - httpd
+         - mariadb-server
+         - mariadb
+         - php
+         - php-mysql 
+         - php-common
+         - php-mbstring 
+         - php-mcrypt 
+         state: latest
+         enablerepo: "epel,ol7_latest"
+     - name: Start httpd
+       systemd:
+         state: restarted
+         enabled: yes
+         name: httpd
+          
+     - name: Start mariadb
+       systemd:
+         state: restarted
+         enabled: yes
+         name: mariadb
+ 
+
+     - name: Copy phpinfo
+       copy:
+         content: '<?php phpinfo();?>'
+         dest: /var/www/html/index.php
+         owner: apache
+         group: apache
+         mode: '0644'   
+    when: ansible_distribution == "CentOS"  
+  - block: ###Debain###
+     - name: Install LAMP
+       apt:
+         name:
+         - apache2
+         - mysql-client
+         - mysql-server
+         - php
+         - php-mysql
+         - php-common
+         - php-mbstring
+         - php-mcrypt
+         - php-xml
+         - php-gd
+         state: latest
+     - name: Start Apache
+       systemd: 
+         state: restarted
+         enabled: yes
+         name: apache2
+     - name: Start Mysqld
+       systemd:
+         state: restarted
+         enabled: yes
+         name: mysqld
+     - name: Copy phpinfo
+       copy:
+         content: '<?php phpinfo();?>'
+         dest: /var/www/html/info.php
+         owner: www-data
+         group: www-data
+         mode: "0644"
+    when: ansible_distribution == "Debian"     
+
+
+        
+
+           
+
+  
